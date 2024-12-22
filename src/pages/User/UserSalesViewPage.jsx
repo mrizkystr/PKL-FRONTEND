@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import SidebarUser from "../../components/layout/SidebarUser"; // Pastikan path sesuai
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -14,24 +15,21 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Box,
-  Typography,
 } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
-import { salesCodesApi } from "../../api/api"; // Pastikan API ini valid
-import SidebarUser from "../../components/layout/SidebarUser"; // Import SidebarUser
+import { userApi } from "../../api/api";
 import Cookies from "js-cookie";
 
 const UserSalesViewPage = () => {
   const [salesCodes, setSalesCodes] = useState({ data: [], links: {} });
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState("august"); // Default bulan
+  const [selectedMonth, setSelectedMonth] = useState("august");
   const navigate = useNavigate();
 
   const fetchSalesCodes = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await salesCodesApi.getList(page);
+      const response = await userApi.salesCodesApi.getList(page);
       if (response?.data) {
         setSalesCodes(response);
       } else {
@@ -54,78 +52,72 @@ const UserSalesViewPage = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <SidebarUser /> {/* Panggil SidebarUser */}
-      <Box sx={{ flex: 1, p: 3 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          Data Sales Codes
-        </Typography>
-        <Box
-          sx={{
+    <div style={{ display: "flex", backgroundColor: "#001F3F", minHeight: "100vh", padding: "16px" }}>
+      {/* Sidebar */}
+      <SidebarUser />
+
+      {/* Main Content */}
+      <div style={{ flexGrow: 1, padding: "16px", marginRight: "100px" }}>
+        <div
+          style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
+            marginBottom: 16,
+            color: "#FFFFFF",
           }}
         >
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="month-select-label">Bulan</InputLabel>
-            <Select
-              labelId="month-select-label"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-            >
-              <MenuItem value="august">Agustus</MenuItem>
-              <MenuItem value="september">September</MenuItem>
-              <MenuItem value="october">Oktober</MenuItem>
-              {/* Tambahkan opsi bulan lainnya jika diperlukan */}
-            </Select>
-          </FormControl>
-        </Box>
+          <h1>Data Sales Codes</h1>
+          <div style={{ display: "flex", gap: 16 }}>
+            <FormControl style={{ minWidth: 120 }}>
+              <InputLabel id="month-select-label">Bulan</InputLabel>
+              <Select
+                labelId="month-select-label"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                style={{ color: "#FFFFFF", backgroundColor: "#0D47A1" }}
+              >
+                <MenuItem value="august">Agustus</MenuItem>
+                <MenuItem value="september">September</MenuItem>
+                <MenuItem value="october">Oktober</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </div>
         {!loading ? (
-          salesCodes.data.length > 0 ? (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Kode</TableCell>
-                    <TableCell>Mitra Nama</TableCell>
-                    <TableCell>STO</TableCell>
-                    <TableCell>Action</TableCell>
+          <TableContainer component={Paper} sx={{ backgroundColor: "#E3F2FD", borderRadius: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Kode</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Mitra Nama</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>STO</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {salesCodes.data.map((code) => (
+                  <TableRow key={code.id}>
+                    <TableCell>{code.id}</TableCell>
+                    <TableCell>{selectedMonth === "august" ? code.kode_agen : code.kode_baru}</TableCell>
+                    <TableCell>{code.mitra_nama}</TableCell>
+                    <TableCell>{code.sto}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => navigate(`/user/sales-codes/detail/${code.id}`)}>
+                        <Visibility />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {salesCodes.data.map((code) => (
-                    <TableRow key={code.id}>
-                      <TableCell>{code.id}</TableCell>
-                      <TableCell>
-                        {selectedMonth === "august"
-                          ? code.kode_agen || "N/A"
-                          : code.kode_baru || "N/A"}
-                      </TableCell>
-                      <TableCell>{code.mitra_nama || "N/A"}</TableCell>
-                      <TableCell>{code.sto || "N/A"}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          onClick={() => navigate(`/user/sales-codes/detail/${code.id}`)}
-                        >
-                          <Visibility />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <Typography>No sales codes found.</Typography>
-          )
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         ) : (
-          <Typography>Loading...</Typography>
+          <p>Loading...</p>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

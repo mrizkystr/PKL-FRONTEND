@@ -119,16 +119,6 @@ const LoginForm = () => {
             {mutation.isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          align="center"
-          sx={{ mt: 1 }}
-        >
-          <a href="/forgot-password" style={{ textDecoration: "none", color: "#1976d2" }}>
-            Forgot Username or Password?
-          </a>
-        </Typography>
       </Paper>
     </Grid>
   );

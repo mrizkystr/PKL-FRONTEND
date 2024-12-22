@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { dataPsApi } from "../../api/api";
 import { getDashboardData } from "../../api/api";
-import Sidebar from "../../components/layout/Sidebar"; // Import Sidebar
+import Sidebar from "../../components/layout/Sidebar";
 import {
   Box,
   Card,
@@ -30,8 +30,19 @@ const MitraPieChart = () => {
   const [selectedSto, setSelectedSto] = useState("");
 
   const stoList = [
-    "SPL", "BOO", "DMG", "LWL", "CSE", "PAR", 
-    "CGD", "PAG", "JSA", "ABC", "BCD", "LBI", "CPS"
+    "SPL",
+    "BOO",
+    "DMG",
+    "LWL",
+    "CSE",
+    "PAR",
+    "CGD",
+    "PAG",
+    "JSA",
+    "ABC",
+    "BCD",
+    "LBI",
+    "CPS",
   ];
 
   const {
@@ -94,11 +105,11 @@ const MitraPieChart = () => {
   ];
 
   return (
-    <Box display="flex" minHeight="100vh">
-      <Sidebar /> {/* Sidebar Component */}
-      <Box flex={1} p={3}>
+    <Box display="flex" minHeight="100vh" sx={{ backgroundColor: "#001f3f" }}>
+      <Sidebar />
+      <Box flex={1} p={3} sx={{ color: "#fff" }}>
         <Container maxWidth="xl">
-          <Box sx={{ mt: 4, mb: 4 }}>
+          <Box sx={{ mt: 8, mb: 4, mr: 10 }}>
             <Typography variant="h4" gutterBottom>
               Mitra Pie Chart
             </Typography>
@@ -106,8 +117,12 @@ const MitraPieChart = () => {
             <Grid container spacing={2} sx={{ mb: 4 }}>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
-                  <InputLabel>Pilih Bulan</InputLabel>
-                  <Select value={selectedMonth} onChange={handleMonthChange}>
+                  <InputLabel sx={{ color: "#fff" }}>Pilih Bulan</InputLabel>
+                  <Select
+                    value={selectedMonth}
+                    onChange={handleMonthChange}
+                    sx={{ backgroundColor: "#fff" }}
+                  >
                     <MenuItem value="">Semua Bulan</MenuItem>
                     {months.map((month) => (
                       <MenuItem key={month} value={month}>
@@ -119,8 +134,12 @@ const MitraPieChart = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
-                  <InputLabel>Pilih STO</InputLabel>
-                  <Select value={selectedSto} onChange={handleStoChange}>
+                  <InputLabel sx={{ color: "#fff" }}>Pilih STO</InputLabel>
+                  <Select
+                    value={selectedSto}
+                    onChange={handleStoChange}
+                    sx={{ backgroundColor: "#fff" }}
+                  >
                     <MenuItem value="">Semua STO</MenuItem>
                     {stoList.map((sto) => (
                       <MenuItem key={sto} value={sto}>
@@ -139,9 +158,9 @@ const MitraPieChart = () => {
                 Error: {error.message}
               </Typography>
             ) : transformedData.length > 0 ? (
-              <Card>
+              <Card sx={{ backgroundColor: "#fff", mb: 4, p: 2 }}>
                 <CardContent>
-                  <Box sx={{ width: "100%", height: 400 }}>
+                  <Box sx={{ width: "100%", height: 420 }}>
                     <ResponsiveContainer>
                       <PieChart>
                         <Pie
@@ -150,9 +169,9 @@ const MitraPieChart = () => {
                           nameKey="name"
                           cx="50%"
                           cy="50%"
-                          outerRadius={150}
+                          outerRadius={180}  // Increased radius to add space
                           fill="#8884d8"
-                          label
+                          label={false}  // Disable value lines
                         >
                           {transformedData.map((entry, index) => (
                             <Cell
@@ -174,52 +193,33 @@ const MitraPieChart = () => {
               </Typography>
             )}
 
-            <Container>
-              <Stack spacing={3}>
-                <Grid container gap={3} justifyContent={{ xs: "center" }}>
-                  <Card sx={{ maxWidth: 345 }}>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5">
-                        Completed Orders
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {data?.completedOrders}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                  <Card sx={{ maxWidth: 345 }}>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5">
-                        Total Sales Code
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {data?.totalSalesCodes}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                  <Card sx={{ maxWidth: 345 }}>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5">
-                        Total Orders User
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {data?.totalOrders}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                  <Card sx={{ maxWidth: 345 }}>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5">
-                        Total Pending Orders
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {data?.pendingOrders}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Stack>
-            </Container>
+            <Box sx={{ mt: 4 }}>
+              <Grid container spacing={3}>
+                {[ 
+                  { title: "Completed Orders", value: data?.completedOrders },
+                  { title: "Total Sales Code", value: data?.totalSalesCodes },
+                  { title: "Total Orders User", value: data?.totalOrders },
+                  { title: "Total Pending Orders", value: data?.pendingOrders },
+                ].map(({ title, value }, index) => (
+                  <Grid item xs={12} sm={6} md={3} key={index}>
+                    <Card sx={{ backgroundColor: "#003366" }}>
+                      <CardContent>
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          sx={{ color: "#fff" }}
+                        >
+                          {title}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#fff" }}>
+                          {value}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
           </Box>
         </Container>
       </Box>

@@ -61,17 +61,16 @@ const SalesCodeCreateForm = () => {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: '#001F3F' }}>
-      {/* Sidebar */}
-      <div style={{ width: '250px', backgroundColor: '#0D47A1', padding: '20px', boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)' }}>
-        <Sidebar /> {/* Sidebar */}
-      </div>
+    <div style={{ display: "flex", backgroundColor: "#001F3D", minHeight: "100vh" }}>
+    {/* Sidebar */}
+    <Sidebar /> 
 
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: '20px', backgroundColor: '#E3F2FD' }}>
-        <form onSubmit={handleSubmit}>
-          {error && <Alert severity="error">{error}</Alert>}
-          {success && <Alert severity="success">Sales code created successfully!</Alert>}
+    {/* Main Content */}
+    <main style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backgroundColor: '#001F3D' }}>
+      <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '800px', backgroundColor: '#E3F2FD', padding: '20px', borderRadius: '8px' }}>
+        {error && <Alert severity="error">{error}</Alert>}
+        {success && <Alert severity="success">Sales Code Created successfully!</Alert>}
+          {/* Form Inputs */}
           <Grid container spacing={3}>
             {Object.keys(formData).map((key) => (
               <Grid item xs={12} sm={6} key={key}>
@@ -82,15 +81,27 @@ const SalesCodeCreateForm = () => {
                   value={formData[key]}
                   onChange={handleChange}
                   variant="outlined"
+                  style={{ backgroundColor: "#E0F7FA" }} // Light blue background for inputs
                 />
               </Grid>
             ))}
           </Grid>
+
+          {/* Buttons */}
           <div style={{ marginTop: 16, display: "flex", gap: 16 }}>
-            <Button variant="outlined" onClick={() => navigate("/sales-codes")}>
+            <Button 
+              variant="outlined" 
+              onClick={() => navigate("/sales-codes")}
+              style={{ borderColor: "#001F3F", color: "#001F3F" }}
+            >
               Back
             </Button>
-            <Button variant="contained" type="submit" disabled={loading}>
+            <Button 
+              variant="contained" 
+              type="submit" 
+              disabled={loading}
+              style={{ backgroundColor: "#001F3F", color: "#fff" }}
+            >
               {loading ? "Creating..." : "Create"}
             </Button>
           </div>

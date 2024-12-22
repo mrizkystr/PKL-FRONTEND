@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+import SidebarSales from "../../components/layout/SidebarSales"; // Pastikan path sesuai
+import { useNavigate } from "react-router-dom";
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -7,20 +10,20 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
+  IconButton,
+  MenuItem,
+  Select,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
-import { salesApi } from "../../api/api"; // Sesuaikan path jika berbeda
-import { useNavigate } from "react-router-dom";
-import SidebarSales from "../../components/layout/SidebarSales"; // Import SidebarSales
+import { FileUpload, Add, Visibility } from "@mui/icons-material";
+import { salesApi } from "../../api/api";
+import Cookies from "js-cookie";
 
 const SalesViewPage = () => {
   const [salesCodes, setSalesCodes] = useState({ data: [], links: {} });
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState("august"); // Default bulan
+  const [selectedMonth, setSelectedMonth] = useState("august");
   const navigate = useNavigate();
 
   const fetchSalesCodes = async (page = 1) => {
@@ -34,9 +37,11 @@ const SalesViewPage = () => {
       }
     } catch (error) {
       console.error("Error fetching sales codes:", error);
-      if (error.response?.status === 401) {
+      if (error.response && error.response.status === 401) {
+        Cookies.remove("token");
         navigate("/login");
       }
+      alert("Terjadi kesalahan saat memuat data Sales Codes.");
     } finally {
       setLoading(false);
     }
@@ -44,21 +49,22 @@ const SalesViewPage = () => {
 
   useEffect(() => {
     fetchSalesCodes();
-  }, [selectedMonth]); // Fetch data again when selectedMonth changes
+  }, []);
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", backgroundColor: "#001F3F", minHeight: "100vh", padding: "16px" }}>
       {/* Sidebar */}
       <SidebarSales />
 
       {/* Main Content */}
-      <div style={{ flex: 1, padding: 16 }}>
+      <div style={{ flexGrow: 1, padding: "16px", marginRight: "100px" }}>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             marginBottom: 16,
+            color: "#FFFFFF",
           }}
         >
           <h1>Data Sales Codes</h1>
@@ -69,57 +75,44 @@ const SalesViewPage = () => {
                 labelId="month-select-label"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
+                style={{ color: "#FFFFFF", backgroundColor: "#0D47A1" }}
               >
                 <MenuItem value="august">Agustus</MenuItem>
                 <MenuItem value="september">September</MenuItem>
                 <MenuItem value="october">Oktober</MenuItem>
-                {/* Tambahkan opsi bulan lainnya jika diperlukan */}
               </Select>
             </FormControl>
           </div>
         </div>
         {!loading ? (
-          salesCodes.data.length > 0 ? (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Kode</TableCell>
-                    <TableCell>Mitra Nama</TableCell>
-                    <TableCell>STO</TableCell>
-                    <TableCell>Action</TableCell>
+          <TableContainer component={Paper} sx={{ backgroundColor: "#E3F2FD", borderRadius: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Kode</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Mitra Nama</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>STO</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {salesCodes.data.map((code) => (
+                  <TableRow key={code.id}>
+                    <TableCell>{code.id}</TableCell>
+                    <TableCell>{selectedMonth === "august" ? code.kode_agen : code.kode_baru}</TableCell>
+                    <TableCell>{code.mitra_nama}</TableCell>
+                    <TableCell>{code.sto}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => navigate(`/sales/sales-codes/detail/${code.id}`)}>
+                        <Visibility />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {salesCodes.data.map((code) => (
-                    <TableRow key={code.id}>
-                      <TableCell>{code.id}</TableCell>
-                      <TableCell>
-                        {selectedMonth === "august"
-                          ? code.kode_agen || "N/A"
-                          : code.kode_baru || "N/A"}
-                      </TableCell>
-                      <TableCell>{code.mitra_nama || "N/A"}</TableCell>
-                      <TableCell>{code.sto || "N/A"}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          onClick={() =>
-                            navigate(`/sales/sales-codes/detail/${code.id}`)
-                          }
-                        >
-                          View Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <p>No sales codes found.</p>
-          )
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         ) : (
           <p>Loading...</p>
         )}

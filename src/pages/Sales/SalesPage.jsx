@@ -15,6 +15,7 @@ import {
   Dialog,
   TableFooter,
   TablePagination,
+  Typography,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -23,7 +24,7 @@ import {
 } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import { salesApi } from "../../api/api";
-import SidebarSales from "../../components/layout/SidebarSales"; // Import SidebarSales
+import SidebarSales from "../../components/layout/SidebarSales";
 
 const SalesPage = () => {
   const navigate = useNavigate();
@@ -33,17 +34,18 @@ const SalesPage = () => {
   const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  // Query to fetch the data
+  // Fetch data
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["sales", page, rowsPerPage],
+    queryKey: ["dataPs", page, rowsPerPage],
     queryFn: () => salesApi.dataPsApi.getList(page, rowsPerPage),
     onError: (err) => toast.error(`Error: ${err.message}`),
   });
 
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: salesApi.dataPsApi.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries(["sales"]);
+      queryClient.invalidateQueries(["dataPs"]);
       toast.success("Data deleted successfully");
     },
     onError: (error) => {
@@ -51,10 +53,11 @@ const SalesPage = () => {
     },
   });
 
+  // Import mutation
   const importMutation = useMutation({
     mutationFn: salesApi.dataPsApi.import,
     onSuccess: () => {
-      queryClient.invalidateQueries(["sales"]);
+      queryClient.invalidateQueries(["dataPs"]);
       toast.success("Data imported successfully");
       setOpenImportDialog(false);
     },
@@ -87,56 +90,166 @@ const SalesPage = () => {
   }
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box
+      sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#001F3F" }}
+    >
       {/* Sidebar */}
       <SidebarSales />
-      
+
       {/* Main Content */}
-      <Box sx={{ flex: 1, p: 3 }}>
-        <Box sx={{ mb: 3, display: "flex", gap: 2 }}>
-          <Button variant="contained" onClick={() => setOpenImportDialog(true)}>
+      <Box sx={{ flex: 1, p: 3, mr: 4 }}>
+        {/* Header */}
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ color: "#FFFFFF", mb: 3 }}
+        >
+          Sales Data PS
+        </Typography>
+
+        <Box sx={{ mb: 3, display: "flex", gap: 2, justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#007BFF",
+              ":hover": { backgroundColor: "#0056b3" },
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
+            onClick={() => setOpenImportDialog(true)}
+          >
             Import Excel
           </Button>
-          <Button variant="contained" onClick={() => navigate("/sales/create")}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#28A745",
+              ":hover": { backgroundColor: "#1e7e34" },
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
+            onClick={() => navigate("/sales/create")}
+          >
             Add New Data
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#ECE852",
+              ":hover": { backgroundColor: "#FFC145" },
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
+            onClick={() => navigate("/sales/ps-analysis/sto")}
+          >
+            STO Analysis
           </Button>
         </Box>
 
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ backgroundColor: "#001F3F" }}>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Order ID</TableCell>
-                <TableCell>Regional</TableCell>
-                <TableCell>Witel</TableCell>
-                <TableCell>Datel</TableCell>
-                <TableCell>STO</TableCell>
-                <TableCell>Actions</TableCell>
+              <TableRow sx={{ backgroundColor: "#B3E5FC" }}>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  ID
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Order ID
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Regional
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Witel
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Datel
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  STO
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {Array.isArray(data?.data) && data?.data.map((row) => (
+              {data?.data.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.ORDER_ID}</TableCell>
-                  <TableCell>{row.REGIONAL}</TableCell>
-                  <TableCell>{row.WITEL}</TableCell>
-                  <TableCell>{row.DATEL}</TableCell>
-                  <TableCell>{row.STO}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.id}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.ORDER_ID}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.REGIONAL}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.WITEL}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.DATEL}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.STO}
+                  </TableCell>
+                  <TableCell sx={{ padding: "12px" }}>
                     <IconButton
                       onClick={() => navigate(`/sales/detail/${row.id}`)}
                     >
-                      <ViewIcon />
+                      <ViewIcon sx={{ color: "#FFFFFF" }} />
                     </IconButton>
                     <IconButton
                       onClick={() => navigate(`/sales/update/${row.id}`)}
                     >
-                      <EditIcon />
+                      <EditIcon sx={{ color: "#FFFFFF" }} />
                     </IconButton>
                     <IconButton onClick={() => deleteMutation.mutate(row.id)}>
-                      <DeleteIcon />
+                      <DeleteIcon sx={{ color: "#FFFFFF" }} />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -146,26 +259,40 @@ const SalesPage = () => {
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 20]}
-                  count={data?.pagination && data?.pagination.total ? data?.pagination.total : 0}
+                  count={data?.pagination.total || 0}
                   rowsPerPage={rowsPerPage}
                   page={page - 1} // Convert back to 0-based indexing for MUI
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
+                  sx={{ color: "#FFFFFF" }}
                 />
               </TableRow>
             </TableFooter>
           </Table>
         </TableContainer>
 
-        <Dialog open={openImportDialog} onClose={() => setOpenImportDialog(false)}>
-          <Box sx={{ p: 2 }}>
-            <h2>Import Data</h2>
+        {/* Import Dialog */}
+        <Dialog
+          open={openImportDialog}
+          onClose={() => setOpenImportDialog(false)}
+        >
+          <Box sx={{ p: 3 }}>
             <input
               type="file"
+              accept=".xlsx,.xls"
               onChange={(e) => setSelectedFile(e.target.files[0])}
             />
-            <Button onClick={handleImport} variant="contained">
-              Import
+            <Button
+              sx={{
+                mt: 2,
+                backgroundColor: "#007BFF",
+                ":hover": { backgroundColor: "#0056b3" },
+                padding: "10px 20px",
+              }}
+              onClick={handleImport}
+              disabled={!selectedFile}
+            >
+              Upload
             </Button>
           </Box>
         </Dialog>

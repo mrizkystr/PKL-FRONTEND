@@ -15,6 +15,7 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Pagination,
 } from "@mui/material";
 import { FileUpload, Add, Visibility, Edit, Delete } from "@mui/icons-material";
 import { salesCodesApi } from "../../api/api";
@@ -24,6 +25,7 @@ const SalesCodePage = () => {
   const [salesCodes, setSalesCodes] = useState({ data: [], links: {} });
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState("august");
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const fetchSalesCodes = async (page = 1) => {
@@ -32,6 +34,7 @@ const SalesCodePage = () => {
       const response = await salesCodesApi.getList(page);
       if (response?.data) {
         setSalesCodes(response);
+        setCurrentPage(page);
       } else {
         setSalesCodes({ data: [] });
       }
@@ -74,13 +77,17 @@ const SalesCodePage = () => {
     }
   };
 
+  const handlePageChange = (event, value) => {
+    fetchSalesCodes(value);
+  };
+
   return (
     <div style={{ display: "flex", backgroundColor: "#001F3F", minHeight: "100vh", padding: "16px" }}>
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div style={{ flexGrow: 1, padding: "16px" }}>
+      <div style={{ flexGrow: 1, padding: "16px", marginRight: "100px" }}>
         <div
           style={{
             display: "flex",
@@ -130,40 +137,57 @@ const SalesCodePage = () => {
           </div>
         </div>
         {!loading ? (
-          <TableContainer component={Paper} sx={{ backgroundColor: "#E3F2FD", borderRadius: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Kode</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Mitra Nama</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>STO</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {salesCodes.data.map((code) => (
-                  <TableRow key={code.id}>
-                    <TableCell>{code.id}</TableCell>
-                    <TableCell>{selectedMonth === "august" ? code.kode_agen : code.kode_baru}</TableCell>
-                    <TableCell>{code.mitra_nama}</TableCell>
-                    <TableCell>{code.sto}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => navigate(`/sales-codes/${code.id}`)}>
-                        <Visibility />
-                      </IconButton>
-                      <IconButton onClick={() => navigate(`/sales-codes/update/${code.id}`)}>
-                        <Edit />
-                      </IconButton>
-                      <IconButton onClick={() => handleDelete(code.id)}>
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
+          <>
+            <TableContainer component={Paper} sx={{ backgroundColor: "#E3F2FD", borderRadius: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Kode</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Mitra Nama</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>STO</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {salesCodes.data.map((code) => (
+                    <TableRow key={code.id}>
+                      <TableCell>{code.id}</TableCell>
+                      <TableCell>{selectedMonth === "august" ? code.kode_agen : code.kode_baru}</TableCell>
+                      <TableCell>{code.mitra_nama}</TableCell>
+                      <TableCell>{code.sto}</TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => navigate(`/sales-codes/${code.id}`)}>
+                          <Visibility />
+                        </IconButton>
+                        <IconButton onClick={() => navigate(`/sales-codes/update/${code.id}`)}>
+                          <Edit />
+                        </IconButton>
+                        <IconButton onClick={() => handleDelete(code.id)}>
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/* Pagination */}
+            <Pagination
+              count={salesCodes?.links?.last_page || 100}
+              page={currentPage}
+              onChange={handlePageChange}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "16px",
+                "& .MuiPaginationItem-root": {
+                  color: "#FFFFFF", // Set text color to white
+                },
+              }}
+            />
+          </>
         ) : (
           <p>Loading...</p>
         )}

@@ -142,7 +142,7 @@ const CreateForm = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: 1, marginTop: 18  }}>
         <Paper
           sx={{
             p: 3,

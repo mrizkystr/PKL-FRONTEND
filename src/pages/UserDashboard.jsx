@@ -81,9 +81,14 @@ const UserDashboard = () => {
           flexGrow: 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           py: 5,
+          marginTop: "100px"
         }}
       >
         <Container>
+        <Typography variant="h4" gutterBottom style={{ color: '#FFFFFF', fontWeight: 'bold' }}>
+            User Dashboard
+          </Typography>
+
           <Stack spacing={4} alignItems="center">
             {/* Summary Tables */}
             <Grid container spacing={3} justifyContent="center">

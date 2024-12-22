@@ -107,7 +107,7 @@ const UserCodeAnalysis = () => {
       }}
     >
       <SidebarUser /> {/* Menambahkan Sidebar */}
-      <Box sx={{ flex: 1, p: 3 }}>
+      <Box sx={{ flex: 1, p: 3, mr: 10 }}>
         <Typography
           variant="h4"
           gutterBottom

@@ -1,5 +1,7 @@
+// UserRegisterAdmin.js
 import React, { useState, useEffect } from "react";
 import {
+  Box,
   Card,
   CardHeader,
   CardContent,
@@ -19,14 +21,14 @@ import Sidebar from "../../components/layout/Sidebar"; // Import Sidebar
 import { adminApi } from "../../api/api"; // Sesuaikan path jika berbeda
 
 const UserRegisterAdmin = () => {
-  const [users, setUsers] = useState([]); // Menyimpan data users
-  const [error, setError] = useState(""); // Menyimpan pesan error
-  const [success, setSuccess] = useState(""); // Menyimpan pesan sukses
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const fetchUsers = async () => {
     try {
       const response = await adminApi.users.getList();
-      setUsers(response.users || []); // Update state users
+      setUsers(response.users || []);
       setError("");
     } catch (err) {
       setError("Failed to fetch users");
@@ -37,9 +39,9 @@ const UserRegisterAdmin = () => {
   const handleDelete = async (id) => {
     try {
       await adminApi.users.delete(id);
-      setUsers(users.filter((user) => user.id !== id)); // Hapus user dari state
+      setUsers(users.filter((user) => user.id !== id));
       setSuccess("User deleted successfully!");
-      setTimeout(() => setSuccess(""), 3000); // Reset pesan sukses
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       setError("Failed to delete user");
       console.error("Error deleting user:", err);
@@ -51,60 +53,44 @@ const UserRegisterAdmin = () => {
   }, []);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        backgroundColor: "#001f3f",
-        minHeight: "100vh",
-      }}
-    >
-      {/* Sidebar */}
+    <Box display="flex" bgcolor="#001f3f" minHeight="100vh" overflow="hidden">
       <Sidebar />
-
-      {/* Main Content */}
-      <div className="p-6" style={{ flexGrow: 1 }}>
-        <Card style={{ backgroundColor: "#003366", color: "#ffffff" }}>
-          <CardHeader title="Data Users" style={{ color: "#ffffff" }} />
+      <Box flexGrow={1} p={4} mt={10} mr={8} ml={4}>
+        <Card sx={{ backgroundColor: "#003366", color: "#ffffff" }}>
+          <CardHeader title="Data Users" sx={{ color: "#ffffff" }} />
           <CardContent>
             {error && <Alert severity="error">{error}</Alert>}
             {success && <Alert severity="success">{success}</Alert>}
-            <div style={{ marginTop: "20px" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => (window.location.href = "/admin/users/create")}
-              >
-                Add New User
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ marginLeft: "10px" }}
-                onClick={() => (window.location.href = "/admin/users/import")}
-              >
-                Import Excel
-              </Button>
-            </div>
-            <TableContainer
-              style={{ marginTop: "20px", backgroundColor: "#e6f7ff" }}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => (window.location.href = "/admin/users/create")}
+              style={{ marginRight: "10px" }} // Add some spacing between the buttons
             >
+              Add New User
+            </Button>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "green", color: "white" }} // Set color to green for the import button
+              onClick={() => (window.location.href = "/admin/users/import")}
+            >
+              Import New User
+            </Button>
+            <TableContainer sx={{ mt: 3, backgroundColor: "#e6f7ff" }}>
               <Table>
                 <TableHead>
-                  <TableRow style={{ backgroundColor: "#007acc" }}>
-                    <TableCell style={{ color: "#ffffff" }}>ID</TableCell>
-                    <TableCell style={{ color: "#ffffff" }}>Username</TableCell>
-                    <TableCell style={{ color: "#ffffff" }}>Email</TableCell>
-                    <TableCell style={{ color: "#ffffff" }}>Role</TableCell>
-                    <TableCell style={{ color: "#ffffff" }}>Action</TableCell>
+                  <TableRow sx={{ backgroundColor: "#007acc" }}>
+                    <TableCell sx={{ color: "#ffffff" }}>ID</TableCell>
+                    <TableCell sx={{ color: "#ffffff" }}>Username</TableCell>
+                    <TableCell sx={{ color: "#ffffff" }}>Email</TableCell>
+                    <TableCell sx={{ color: "#ffffff" }}>Role</TableCell>
+                    <TableCell sx={{ color: "#ffffff" }}>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {users.length > 0 ? (
                     users.map((user) => (
-                      <TableRow
-                        key={user.id}
-                        style={{ backgroundColor: "#f0f8ff" }}
-                      >
+                      <TableRow key={user.id}>
                         <TableCell>{user.id}</TableCell>
                         <TableCell>{user.username}</TableCell>
                         <TableCell>{user.email}</TableCell>
@@ -143,8 +129,8 @@ const UserRegisterAdmin = () => {
             </TableContainer>
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

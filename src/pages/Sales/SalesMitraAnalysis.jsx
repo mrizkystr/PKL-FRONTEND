@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Container,
@@ -15,135 +15,141 @@ import {
   TableHead,
   TableRow,
   Paper,
-  CircularProgress,
 } from "@mui/material";
-import { salesApi } from "../../api/api";
+import { dataPsApi } from "../../api/api";
 
 const SalesMitraAnalysis = () => {
-  const [monthList, setMonthList] = useState([]); // Default to an empty array
-  const [stoList, setStoList] = useState([]);
+  const [chartData, setChartData] = useState(null); // assuming you get some chartData from an API or similar
   const [mitraAnalysis, setMitraAnalysis] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedSTO, setSelectedSTO] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [selectedSto, setSelectedSto] = useState("");
+
+  // Month options
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // Assuming you fetch chartData from an API or useMemo
+  const stoList = useMemo(() => {
+    const defaultStoList = [
+      "SPL",
+      "BOO",
+      "DMG",
+      "LWL",
+      "CSE",
+      "PAR",
+      "CGD",
+      "PAG",
+      "JSA",
+      "ABC",
+      "BCD",
+      "LBI",
+      "CPS",
+    ]; // example default sto list
+    return Array.isArray(chartData?.stoList)
+      ? chartData.stoList
+      : defaultStoList;
+  }, [chartData]);
+
+  const handleMonthChange = (event) => setSelectedMonth(event.target.value);
+  const handleStoChange = (event) => setSelectedSto(event.target.value);
 
   useEffect(() => {
-    const fetchDropdownData = async () => {
-      try {
-        // Fetch months
-        const months = await salesApi.dataPsApi.getMonthList();
-        console.log("Months API response:", months); // Debugging
-        setMonthList(Array.isArray(months) ? months : []); // Ensure it's an array
-
-        // Fetch STO list
-        const sto = await salesApi.dataPsApi.getStoList();
-        console.log("STO API response:", sto); // Debugging
-        setStoList(Array.isArray(sto) ? sto : []); // Ensure it's an array
-      } catch (error) {
-        console.error("Failed to fetch dropdown data:", error);
-        setError("Failed to load dropdown data.");
-      }
-    };
-
     const fetchMitraAnalysis = async () => {
-      setLoading(true);
-      setError("");
       try {
-        const params = { month: selectedMonth, sto: selectedSTO };
-        const analysis = await salesApi.dataPsApi.getMitraAnalysis(params);
-        console.log("Mitra Analysis API response:", analysis); // Debugging
-        setMitraAnalysis(analysis?.mitra_analysis || []); // Ensure it's an array
+        const analysis = await dataPsApi.getMitraAnalysis();
+        setMitraAnalysis(analysis.data.mitra_analysis);
       } catch (error) {
         console.error("Failed to fetch mitra analysis:", error);
-        setError("Failed to load mitra analysis.");
-        setMitraAnalysis([]);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchDropdownData();
     fetchMitraAnalysis();
-  }, [selectedMonth, selectedSTO]);
+  }, []);
 
   const renderTableRows = () =>
-    Array.isArray(mitraAnalysis) && mitraAnalysis.length > 0 ? (
-      mitraAnalysis.map((row, index) => (
-        <TableRow key={index}>
-          <TableCell>{row.Mitra}</TableCell>
-          <TableCell>{row.total}</TableCell>
-        </TableRow>
-      ))
-    ) : (
-      <TableRow>
-        <TableCell colSpan={2} align="center">
-          No data available
-        </TableCell>
+    mitraAnalysis.map((row, index) => (
+      <TableRow key={index}>
+        <TableCell>{row.Mitra}</TableCell>
+        <TableCell>{row.total}</TableCell>
       </TableRow>
-    );
+    ));
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Mitra Analysis
-      </Typography>
-      <Box sx={{ marginBottom: 3 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Month</InputLabel>
-              <Select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-              >
-                {monthList.map((month, index) => (
-                  <MenuItem key={index} value={month}>
-                    {month}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>STO</InputLabel>
-              <Select
-                value={selectedSTO}
-                onChange={(e) => setSelectedSTO(e.target.value)}
-              >
-                {stoList.map((sto, index) => (
-                  <MenuItem key={index} value={sto}>
-                    {sto}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </Box>
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-          <CircularProgress />
+    <Box
+      sx={{ display: "flex", backgroundColor: "#002b5b", minHeight: "100vh" }}
+    >
+      <Container>
+        <Box sx={{ flexGrow: 1, p: 4, mr: 10, mt: 8 }}>
+          <Typography variant="h4" gutterBottom color="white">
+            Data Analysis By Mitra
+          </Typography>
+          <Box sx={{ marginBottom: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel sx={{ color: "white" }}>Month</InputLabel>
+                  <Select
+                    value={selectedMonth}
+                    onChange={handleMonthChange}
+                    sx={{ color: "white", borderColor: "white" }}
+                  >
+                    {months.map((month, index) => (
+                      <MenuItem
+                        key={index}
+                        value={month}
+                        sx={{ color: "black" }}
+                      >
+                        {month}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel sx={{ color: "white" }}>Pilih STO</InputLabel>
+                  <Select
+                    value={selectedSto}
+                    onChange={handleStoChange}
+                    sx={{ color: "white", borderColor: "white" }}
+                  >
+                    <MenuItem value="">Semua STO</MenuItem>
+                    {stoList.map((sto, index) => (
+                      <MenuItem key={index} value={sto} sx={{ color: "black" }}>
+                        {sto}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
-      ) : error ? (
-        <Typography color="error" align="center">
-          {error}
-        </Typography>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
+        <TableContainer component={Paper} sx={{ maxWidth: "100%" }}>
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
               <TableRow>
-                <TableCell>Mitra</TableCell>
-                <TableCell>Total</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Mitra</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>{renderTableRows()}</TableBody>
           </Table>
         </TableContainer>
-      )}
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

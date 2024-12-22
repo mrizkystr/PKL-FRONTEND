@@ -13,28 +13,100 @@ import {
 } from "@mui/material";
 import toast from "react-hot-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { salesApi } from "../../api/api";
-import SidebarSales from "../../components/layout/SidebarSales"; // Import SidebarSales
+import { salesApi } from "../../api/api"; 
+import SidebarSales from "../../components/layout/SidebarSales";
 
 const steps = [
   {
     label: "Basic Info",
     fields: ["ORDER_ID", "REGIONAL", "WITEL", "DATEL", "STO"],
   },
-  // ... other steps remain the same
+  {
+    label: "Service Info",
+    fields: [
+      "JENISPSB",
+      "TYPE_TRANS",
+      "STATUS_RESUME",
+      "TYPE_LAYANAN",
+      "STATUS_INET",
+      "STATUS_ONU",
+    ],
+  },
+  {
+    label: "Customer Info",
+    fields: [
+      "CUSTOMER_NAME",
+      "CONTACT_HP",
+      "INS_ADDRESS",
+      "GPS_LONGITUDE",
+      "GPS_LATITUDE",
+      "NCLI",
+      "POTS",
+      "SPEEDY",
+      "LOC_ID",
+    ],
+  },
+  {
+    label: "Order Details",
+    fields: [
+      "ORDER_DATE",
+      "LAST_UPDATED_DATE",
+      "WONUM",
+      "STATUS_VOICE",
+      "UPLOAD",
+      "DOWNLOAD",
+      "LAST_PROGRAM",
+      "LAST_START",
+      "TINDAK_LANJUT",
+      "ISI_COMMENT",
+      "TGL_COMMENT",
+    ],
+  },
+  {
+    label: "Manajemen Info",
+    fields: [
+      "TANGGAL_MANJA",
+      "TGL_MANJA",
+      "DETAIL_MANJA",
+      "KELOMPOK_KENDALA",
+      "KELOMPOK_STATUS",
+      "HERO",
+      "ADDON",
+    ],
+  },
+  {
+    label: "Sales Info",
+    fields: [
+      "Kode_sales",
+      "Nama_SA",
+      "Mitra",
+      "Ekosistem",
+      "PACKAGE_NAME",
+      "GROUP_PAKET",
+    ],
+  },
+  {
+    label: "Cancellation Info",
+    fields: ["REASON_CANCEL", "KETERANGAN_CANCEL"],
+  },
 ];
 
 const SalesUpdateForm = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = React.useState(0);
+  const { register, handleSubmit, setValue } = useForm();
 
-  const { register, handleSubmit, reset } = useForm();
-
-  const { data } = useQuery({
-    queryKey: ["sales", id],
-    queryFn: () => salesApi.dataPsApi.getDetail(id),
-    onSuccess: (data) => reset(data.data),
+  // Updated useQuery with object syntax for TanStack Query v5
+  const { data: editData } = useQuery({
+    queryKey: ["sales", id], // queryKey replaced array with object
+    queryFn: () => salesApi.dataPsApi.getDetail(id), // queryFn is now a function
+    onSuccess: (data) => {
+      // Set form values based on fetched data
+      Object.entries(data).forEach(([key, value]) => {
+        setValue(key, value);
+      });
+    },
   });
 
   const mutation = useMutation({
@@ -61,27 +133,42 @@ const SalesUpdateForm = () => {
   };
 
   const onSubmit = (data) => {
-    const sanitizedData = Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [key, value || null])
-    );
-    mutation.mutate(sanitizedData);
+    mutation.mutate(data);
   };
 
-  const currentFields = steps[activeStep].fields;
+  const currentFields = steps[activeStep]?.fields || [];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", backgroundColor: "#001F3F", minHeight: "100vh", p: 3 }}>
       {/* Sidebar */}
       <SidebarSales />
 
-      {/* Form Content */}
-      <Box sx={{ flex: 1, p: 3 }}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 3 }}>
-            Update Data ID: {id}
+      {/* Main Content */}
+      <Box sx={{ flex: 1, marginTop: 18  }}>
+        <Paper
+          sx={{
+            p: 3,
+            backgroundColor: "#0D47A1", // Background biru dongker
+            color: "#FFFFFF",
+            borderRadius: "8px",
+          }}
+        >
+          <Typography variant="h5" sx={{ mb: 3, color: "#FFFFFF" }}>
+            Edit Data
           </Typography>
 
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper
+            activeStep={activeStep}
+            sx={{
+              mb: 4,
+              "& .MuiStepLabel-root .Mui-completed": {
+                color: "#4FC3F7 !important",
+              },
+              "& .MuiStepLabel-root .Mui-active": {
+                color: "#4FC3F7",
+              },
+            }}
+          >
             {steps.map((step, index) => (
               <Step key={index}>
                 <StepLabel>{step.label}</StepLabel>
@@ -90,23 +177,67 @@ const SalesUpdateForm = () => {
           </Stepper>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            {currentFields.map((field) => (
-              <TextField
-                key={field}
-                label={field}
-                fullWidth
-                margin="normal"
-                {...register(field)}
-              />
-            ))}
+            <Box
+              sx={{
+                backgroundColor: "#E3F2FD", // Background biru muda untuk tabel
+                p: 3,
+                borderRadius: "8px",
+                mb: 3,
+              }}
+            >
+              {currentFields.map((field) => (
+                <TextField
+                  key={field}
+                  label={field}
+                  fullWidth
+                  margin="normal"
+                  {...register(field)}
+                  defaultValue={editData?.[field] || ""}
+                  sx={{
+                    backgroundColor: "#FFFFFF", // Background putih untuk input field
+                    borderRadius: "4px",
+                  }}
+                />
+              ))}
+            </Box>
 
-            <Box sx={{ mt: 2 }}>
-              <Button onClick={handleBack} disabled={activeStep === 0}>
-                Back
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
+              <Button
+                onClick={() => navigate("/sales")}
+                variant="outlined"
+                sx={{
+                  backgroundColor: "#4FC3F7",
+                  color: "#FFFFFF",
+                  "&:hover": { backgroundColor: "#0288D1" },
+                }}
+              >
+                Back to List
               </Button>
-              <Button variant="contained" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Submit" : "Next"}
-              </Button>
+              <Box>
+                <Button
+                  onClick={handleBack}
+                  disabled={activeStep === 0}
+                  sx={{
+                    mr: 2,
+                    backgroundColor: "#4FC3F7",
+                    color: "#FFFFFF",
+                    "&:hover": { backgroundColor: "#0288D1" },
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  sx={{
+                    backgroundColor: "#4FC3F7",
+                    color: "#FFFFFF",
+                    "&:hover": { backgroundColor: "#0288D1" },
+                  }}
+                >
+                  {activeStep === steps.length - 1 ? "Submit" : "Next"}
+                </Button>
+              </Box>
             </Box>
           </form>
         </Paper>

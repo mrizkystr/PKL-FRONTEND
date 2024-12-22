@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { salesApi } from "../../api/api"; // Sesuaikan path jika berbeda
-import { getSalesDashboardData } from "../../api/api";
-import SidebarSales from "../../components/layout/SidebarSales"; // Import SidebarSales
+import { salesApi, getSalesDashboardData } from "../../api/api";
 import {
   Box,
   Card,
@@ -26,6 +24,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import SidebarSales from "../../components/layout/SidebarSales";
 
 const SalesMitraChart = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -52,24 +51,17 @@ const SalesMitraChart = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["salesMitraChart", selectedMonth, selectedSto],
+    queryKey: ["mitraBarChart", selectedMonth, selectedSto],
     queryFn: async () => {
-      try {
-        const response = await salesApi.dataPsApi.getMitraBarChart({
-          bulan_ps: selectedMonth,
-          sto: selectedSto,
-        });
-        return response;
-      } catch (error) {
-        throw new Error(
-          error.response?.data?.message ||
-            "Failed to fetch Mitra bar chart data"
-        );
-      }
+      const response = await salesApi.dataPsApi.getMitraBarChart({
+        bulan_ps: selectedMonth,
+        sto: selectedSto,
+      });
+      return response;
     },
   });
 
-  const { data } = useQuery({
+  const { data: dashboardData } = useQuery({
     queryKey: ["sales-dashboard"],
     queryFn: getSalesDashboardData,
   });
@@ -84,7 +76,7 @@ const SalesMitraChart = () => {
     }
     return chartData.labels.map((label, index) => ({
       name: label,
-      value: chartData.totals[index] ?? 0,
+      value: chartData.totals[index] || 0,
     }));
   }, [chartData]);
 
@@ -112,16 +104,25 @@ const SalesMitraChart = () => {
     "Desember",
   ];
 
+  const colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a4de6c"];
+
   return (
-    <Box sx={{ display: "flex" }}>
-      <SidebarSales /> {/* Menambahkan Sidebar */}
-      <Container maxWidth="xl" sx={{ ml: 3 }}> {/* Tambahkan margin kiri untuk layout */}
-        <Box sx={{ mt: 4, mb: 4 }}>
+    <Box
+      sx={{
+        display: "flex",
+        backgroundColor: "#002b5b",
+        color: "white",
+        minHeight: "100vh",
+      }}
+    >
+      <SidebarSales />
+
+      <Box sx={{ flexGrow: 1, p: 4, mr: 10, mt:8, ml:8 }}>
+        <Container maxWidth="xl">
           <Typography variant="h4" gutterBottom>
-            Sales Mitra Bar Chart
+           Sales Mitra Bar Chart
           </Typography>
 
-          {/* Dropdown Filters */}
           <Grid container spacing={2} sx={{ mb: 4 }}>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
@@ -141,21 +142,16 @@ const SalesMitraChart = () => {
                 <InputLabel>Pilih STO</InputLabel>
                 <Select value={selectedSto} onChange={handleStoChange}>
                   <MenuItem value="">Semua STO</MenuItem>
-                  {stoList.length > 0 ? (
-                    stoList.map((sto) => (
-                      <MenuItem key={sto} value={sto}>
-                        {sto}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>No STO available</MenuItem>
-                  )}
+                  {stoList.map((sto) => (
+                    <MenuItem key={sto} value={sto}>
+                      {sto}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
           </Grid>
 
-          {/* Chart Rendering */}
           {isLoading ? (
             <Typography align="center">Loading...</Typography>
           ) : error ? (
@@ -172,11 +168,24 @@ const SalesMitraChart = () => {
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis
+                        dataKey="name"
+                        label={{
+                          value: "Mitra",
+                          position: "insideBottom",
+                          offset: -5,
+                        }}
+                      />
+                      <YAxis
+                        label={{
+                          value: "Jumlah",
+                          angle: -90,
+                          position: "insideLeft",
+                        }}
+                      />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="value" fill="#8884d8" />
+                      <Bar dataKey="value" fill="#82ca9d" />
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>
@@ -188,55 +197,36 @@ const SalesMitraChart = () => {
             </Typography>
           )}
 
-          {/* Dashboard Statistics */}
-          <Container>
-            <Stack spacing={3}>
-              <Grid container gap={3} justifyContent={{ xs: "center" }}>
-                <Card sx={{ maxWidth: 345 }}>
+          <Grid container spacing={2} sx={{ mt: 4 }}>
+            {[
+              {
+                label: "Completed Orders",
+                value: dashboardData?.completedOrders,
+              },
+              {
+                label: "Total Sales Code",
+                value: dashboardData?.totalSalesCodes,
+              },
+              { label: "Total Orders User", value: dashboardData?.totalOrders },
+              {
+                label: "Total Pending Orders",
+                value: dashboardData?.pendingOrders,
+              },
+            ].map((stat, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card>
                   <CardContent>
-                    <Typography gutterBottom variant="h5">
-                      Completed Orders
+                    <Typography variant="h6" gutterBottom>
+                      {stat.label}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {data?.completedOrders ?? "N/A"}
-                    </Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5">
-                      Total Sales Code
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {data?.totalSalesCodes ?? "N/A"}
-                    </Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5">
-                      Total Orders User
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {data?.totalOrders ?? "N/A"}
-                    </Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5">
-                      Total Pending Orders
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {data?.pendingOrders ?? "N/A"}
-                    </Typography>
+                    <Typography variant="h4">{stat.value ?? "N/A"}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
-            </Stack>
-          </Container>
-        </Box>
-      </Container>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
     </Box>
   );
 };

@@ -117,13 +117,13 @@ const PSAnalysisByCode = () => {
         sx={{
           display: "flex",
           p: 4,
-          backgroundColor: "#1b1f38", // Latar belakang biru dongker
+          backgroundColor: "#002b5b", // Latar belakang biru dongker
           color: "#fff",
           minHeight: "100vh",
         }}
       >
         <Sidebar />
-        <Box sx={{ flex: 1, p: 3 }}>
+        <Box sx={{ flex: 1, p: 3, mr: 10 }}>
           <Typography
             variant="h4"
             gutterBottom

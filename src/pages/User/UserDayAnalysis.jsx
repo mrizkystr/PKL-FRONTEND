@@ -52,12 +52,14 @@ const UserDayAnalysis = () => {
   };
 
   return (
-    <Box display="flex">
+    <Box
+      sx={{ display: "flex", backgroundColor: "#002b5b", minHeight: "100vh" }}
+    >
       {/* Sidebar */}
       <SidebarUser />
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, mt: 10, mr: 10 }}>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

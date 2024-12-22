@@ -1,7 +1,6 @@
-// File: C:\laragon\www\PKL-Frontend\src\pages\Sales\SalesStoAnalysis.jsx
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import SidebarSales from "../../components/layout/SidebarSales";
+import SidebarSales from "../../components/layout/SidebarSales"; // Import Sidebar
 import {
   Box,
   Typography,
@@ -28,7 +27,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { salesApi } from "../../api/api"; // Ganti dengan path API Anda
+import { salesApi } from "../../api/api"; // Adjust the import path as necessary
 
 const SalesStoAnalysis = () => {
   const [viewType, setViewType] = useState("table"); // View type: table or chart
@@ -37,25 +36,17 @@ const SalesStoAnalysis = () => {
   // Fetch STO analysis data
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["stoAnalysis", selectedSto, viewType],
-    queryFn: () =>
-      salesApi.dataPsApi.getStoAnalysis({
-        sto: selectedSto,
-        view_type: viewType,
-      }),
+    queryFn: () => salesApi.dataPsApi.getStoAnalysis({ sto: selectedSto, view_type: viewType }),
     keepPreviousData: true,
   });
 
+  // Handle undefined or empty data gracefully
   const stoData = data?.stoAnalysis || [];
   const stoList = data?.stoList || [];
 
   if (isLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
       </Box>
     );
@@ -70,17 +61,17 @@ const SalesStoAnalysis = () => {
   }
 
   return (
-    <Box display="flex">
-      <SidebarSales />
-      <Box p={3} flex="1">
-        <Typography variant="h4" gutterBottom>
+    <Box sx={{ display: "flex", backgroundColor: "#002b5b", minHeight: "100vh" }}>
+      <SidebarSales /> {/* Sidebar Component */}
+      <Box flex={1} p={3} mr={8} mt={6} ml={4}>
+        <Typography variant="h4" gutterBottom sx={{ fontSize: "2rem" }} color="white">
           PS Analysis by STO
         </Typography>
 
         {/* Filters */}
         <Box display="flex" gap={2} mb={3}>
           <FormControl variant="outlined" size="small">
-            <InputLabel>Select STO</InputLabel>
+            <InputLabel sx={{ color: "white" }}>Select STO</InputLabel>
             <Select
               value={selectedSto}
               onChange={(e) => setSelectedSto(e.target.value)}
@@ -96,7 +87,7 @@ const SalesStoAnalysis = () => {
           </FormControl>
 
           <FormControl variant="outlined" size="small">
-            <InputLabel>View Type</InputLabel>
+            <InputLabel sx={{ color: "white" }}>View Type</InputLabel>
             <Select
               value={viewType}
               onChange={(e) => setViewType(e.target.value)}
@@ -155,7 +146,7 @@ const SalesStoAnalysis = () => {
                   <Bar
                     key={month}
                     dataKey={month}
-                    fill={`rgba(${index * 50}, 99, 132, 0.8)`}
+                    fill={`rgba(${index * 50}, 99, 132, 0.8)`} // Dynamic colors
                     name={month.replace("total_", "").toUpperCase()}
                   />
                 ))}

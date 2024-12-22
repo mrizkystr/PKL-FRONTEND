@@ -8,6 +8,7 @@ import {
   Button,
   Alert,
   MenuItem,
+  Grid,
 } from "@mui/material";
 import { adminApi } from "../../api/api";
 import Sidebar from "../../components/layout/Sidebar";
@@ -57,95 +58,135 @@ const CreateUserAdmin = () => {
     <div
       style={{
         display: "flex",
-        backgroundColor: "#001f3f",
+        backgroundColor: "#001f3f", // BIRU DONGKER
         minHeight: "100vh",
       }}
     >
       <Sidebar />
-      <div style={{ flexGrow: 1, padding: 16 }}>
-        <Card style={{ backgroundColor: "#B3E5FC", color: "#000000" }}>
-          <CardHeader title="Add New User" style={{ color: "#000000" }} />
-          <CardContent>
-            {/* Alerts */}
-            {error && <Alert severity="error">{error}</Alert>}
-            {success && (
-              <Alert severity="success">User created successfully!</Alert>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit}>
-              <TextField
-                name="name"
-                label="Name"
-                value={formData.name}
-                onChange={handleChange}
-                margin="normal"
-                fullWidth
-              />
-              <TextField
-                name="email"
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                fullWidth
-              />
-              <TextField
-                name="username"
-                label="Username"
-                value={formData.username}
-                onChange={handleChange}
-                margin="normal"
-                fullWidth
-              />
-              <TextField
-                name="password"
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                fullWidth
-              />
-              <TextField
-                name="role"
-                label="Role"
-                select
-                value={formData.role}
-                onChange={handleChange}
-                margin="normal"
-                fullWidth
-              >
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="sales">Sales</MenuItem>
-                <MenuItem value="user">User</MenuItem>
-              </TextField>
-              <Button
-                type="submit"
-                variant="contained"
-                style={{ backgroundColor: "#0288D1", color: "#ffffff" }}
-                fullWidth
-              >
-                Create User
-              </Button>
-            </form>
-
-            {/* Back to List Button */}
-            <Button
-              variant="outlined"
+      <div style={{ flexGrow: 1, padding: "24px" }}>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+          style={{ minHeight: "100vh" }}
+        >
+          <Grid item xs={12} md={8} lg={6}>
+            <Card
+              elevation={3}
               style={{
-                marginTop: "16px",
-                color: "#0288D1",
-                borderColor: "#0288D1",
+                backgroundColor: "#ffffff",
+                borderRadius: "8px",
               }}
-              fullWidth
-              onClick={() => navigate("/admin/users")}
             >
-              Back to List
-            </Button>
-          </CardContent>
-        </Card>
+              <CardHeader
+                title="Add New User"
+                style={{
+                  textAlign: "center",
+                  color: "#0288D1",
+                  fontWeight: "bold",
+                }}
+              />
+              <CardContent>
+                {/* Alerts */}
+                {error && (
+                  <Alert severity="error" style={{ marginBottom: "16px" }}>
+                    {error}
+                  </Alert>
+                )}
+                {success && (
+                  <Alert severity="success" style={{ marginBottom: "16px" }}>
+                    User created successfully!
+                  </Alert>
+                )}
+
+                {/* Form */}
+                <form onSubmit={handleSubmit}>
+                  <TextField
+                    name="name"
+                    label="Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                  />
+                  <TextField
+                    name="email"
+                    label="Email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                  />
+                  <TextField
+                    name="username"
+                    label="Username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                  />
+                  <TextField
+                    name="password"
+                    label="Password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                  />
+                  <TextField
+                    name="role"
+                    label="Role"
+                    select
+                    value={formData.role}
+                    onChange={handleChange}
+                    margin="normal"
+                    fullWidth
+                    variant="outlined"
+                  >
+                    <MenuItem value="admin">Admin</MenuItem>
+                    <MenuItem value="sales">Sales</MenuItem>
+                    <MenuItem value="user">User</MenuItem>
+                  </TextField>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    style={{
+                      backgroundColor: "#0288D1",
+                      color: "#ffffff",
+                      marginTop: "16px",
+                      padding: "10px 0",
+                    }}
+                    fullWidth
+                  >
+                    Create User
+                  </Button>
+                </form>
+
+                {/* Back to List Button */}
+                <Button
+                  variant="outlined"
+                  style={{
+                    marginTop: "16px",
+                    color: "#0288D1",
+                    borderColor: "#0288D1",
+                    padding: "10px 0",
+                  }}
+                  fullWidth
+                  onClick={() => navigate("/admin/users")}
+                >
+                  Back to List
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </div>
     </div>
   );

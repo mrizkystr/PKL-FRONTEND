@@ -14,7 +14,7 @@ import {
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { salesApi } from "../../api/api";
-import SidebarSales from "../../components/layout/SidebarSales"; // Import SidebarSales
+import SidebarSales from "../../components/layout/SidebarSales"; // Import Sidebar component
 
 const steps = [
   {
@@ -95,9 +95,9 @@ const SalesCreateForm = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = React.useState(0);
 
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit } = useForm({
     defaultValues: steps.reduce((acc, step) => {
-      step.fields.forEach((field) => {
+      (step.fields || []).forEach((field) => {
         acc[field] = null;
       });
       return acc;
@@ -134,21 +134,39 @@ const SalesCreateForm = () => {
     mutation.mutate(sanitizedData);
   };
 
-  const currentFields = steps[activeStep].fields;
+  const currentFields = steps[activeStep]?.fields || [];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", backgroundColor: "#001F3F", minHeight: "100vh", p: 3 }}>
       {/* Sidebar */}
       <SidebarSales />
 
-      {/* Form Content */}
-      <Box sx={{ flex: 1, p: 3 }}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 3 }}>
+      {/* Main Content */}
+      <Box sx={{ flex: 1, marginTop: 18  }}>
+        <Paper
+          sx={{
+            p: 3,
+            backgroundColor: "#0D47A1",
+            color: "#FFFFFF",
+            borderRadius: "8px",
+          }}
+        >
+          <Typography variant="h5" sx={{ mb: 3, color: "#FFFFFF" }}>
             Create New Data
           </Typography>
 
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper
+            activeStep={activeStep}
+            sx={{
+              mb: 4,
+              "& .MuiStepLabel-root .Mui-completed": {
+                color: "#4FC3F7 !important",
+              },
+              "& .MuiStepLabel-root .Mui-active": {
+                color: "#4FC3F7",
+              },
+            }}
+          >
             {steps.map((step, index) => (
               <Step key={index}>
                 <StepLabel>{step.label}</StepLabel>
@@ -157,24 +175,67 @@ const SalesCreateForm = () => {
           </Stepper>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            {currentFields.map((field) => (
-              <TextField
-                key={field}
-                label={field}
-                fullWidth
-                margin="normal"
-                {...register(field)}
-                defaultValue=""
-              />
-            ))}
+            <Box
+              sx={{
+                backgroundColor: "#E3F2FD",
+                p: 3,
+                borderRadius: "8px",
+                mb: 3,
+              }}
+            >
+              {currentFields.map((field) => (
+                <TextField
+                  key={field}
+                  label={field}
+                  fullWidth
+                  margin="normal"
+                  {...register(field)}
+                  defaultValue=""
+                  sx={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "4px",
+                  }}
+                />
+              ))}
+            </Box>
 
-            <Box sx={{ mt: 2 }}>
-              <Button onClick={handleBack} disabled={activeStep === 0}>
-                Back
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
+              <Button
+                onClick={() => navigate("/sales")}
+                variant="outlined"
+                sx={{
+                  backgroundColor: "#4FC3F7",
+                  color: "#FFFFFF",
+                  "&:hover": { backgroundColor: "#0288D1" },
+                }}
+              >
+                Back to List
               </Button>
-              <Button variant="contained" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Submit" : "Next"}
-              </Button>
+              <Box>
+                <Button
+                  onClick={handleBack}
+                  disabled={activeStep === 0}
+                  sx={{
+                    mr: 2,
+                    backgroundColor: "#4FC3F7",
+                    color: "#FFFFFF",
+                    "&:hover": { backgroundColor: "#0288D1" },
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  sx={{
+                    backgroundColor: "#4FC3F7",
+                    color: "#FFFFFF",
+                    "&:hover": { backgroundColor: "#0288D1" },
+                  }}
+                >
+                  {activeStep === steps.length - 1 ? "Submit" : "Next"}
+                </Button>
+              </Box>
             </Box>
           </form>
         </Paper>

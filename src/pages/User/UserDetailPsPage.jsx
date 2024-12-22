@@ -10,51 +10,114 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  Grid,
+  CircularProgress,
 } from "@mui/material";
-import toast from "react-hot-toast";
 import { userApi } from "../../api/api";
-import SidebarUser from "../../components/layout/SidebarUser"; // Import SidebarUser
+import SidebarUser from "../../components/layout/SidebarUser";
 
 const UserDetailPsPage = () => {
-  const { id } = useParams(); // Mengambil parameter 'id' dari URL
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  // Query untuk mengambil detail data berdasarkan ID
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["user", id],
     queryFn: () => userApi.dataPsApi.getDetail(id),
-    onError: (err) => toast.error(`Error: ${err.message}`),
   });
 
-  if (isLoading) return <div>Loading...</div>;
-
-  if (isError) {
-    return <div>Error: {error.message}</div>;
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          backgroundColor: "#001F3F",
+        }}
+      >
+        <CircularProgress color="secondary" />
+      </Box>
+    );
   }
 
   const details = data?.data || {};
+  const half = Math.ceil(Object.entries(details).length / 2);
+  const firstHalf = Object.entries(details).slice(0, half);
+  const secondHalf = Object.entries(details).slice(half);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <SidebarUser /> {/* Panggil SidebarUser */}
-      <Box sx={{ flex: 1, p: 3 }}>
-        <Typography variant="h5" sx={{ mb: 3 }}>
+    <Box
+      sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#001F3F" }}
+    >
+      {/* Sidebar */}
+      <Box
+      sx={{
+        display: "flex",
+        backgroundColor: "#001f3f", // Background biru dongker
+        minHeight: "100vh",
+        color: "white", // Warna teks menjadi putih untuk kontras
+      }}
+    >
+        <SidebarUser />
+      </Box>
+
+      {/* Main Content */}
+      <Box sx={{ flex: 1, p: 3, mt: 3}}>
+        <Typography variant="h5" sx={{ mb: 3, color: "#FFFFFF" }}>
           Detail Data ID: {id}
         </Typography>
-        <Paper sx={{ p: 2 }}>
-          <Table>
-            <TableBody>
-              {Object.entries(details).map(([key, value]) => (
-                <TableRow key={key}>
-                  <TableCell sx={{ fontWeight: "bold" }}>{key}</TableCell>
-                  <TableCell>{value}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+
+        <Paper
+          sx={{
+            p: 3,
+            backgroundColor: "#0D47A1",
+            color: "#FFFFFF",
+            borderRadius: 2,
+          }}
+        >
+          <Grid container spacing={3}>
+            {/* First Half */}
+            <Grid item xs={12} sm={6}>
+              <Table sx={{ backgroundColor: "#E3F2FD", borderRadius: 2 }}>
+                <TableBody>
+                  {firstHalf.map(([key, value]) => (
+                    <TableRow key={key}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#0D47A1" }}>
+                        {key}
+                      </TableCell>
+                      <TableCell sx={{ color: "#000000" }}>{value}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Grid>
+
+            {/* Second Half */}
+            <Grid item xs={12} sm={6}>
+              <Table sx={{ backgroundColor: "#E3F2FD", borderRadius: 2 }}>
+                <TableBody>
+                  {secondHalf.map(([key, value]) => (
+                    <TableRow key={key}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#0D47A1" }}>
+                        {key}
+                      </TableCell>
+                      <TableCell sx={{ color: "#000000" }}>{value}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Grid>
+          </Grid>
         </Paper>
+
         <Button
-          sx={{ mt: 3 }}
+          sx={{
+            mt: 3,
+            backgroundColor: "#4FC3F7",
+            color: "#FFFFFF",
+            "&:hover": { backgroundColor: "#0288D1" },
+          }}
           variant="contained"
           onClick={() => navigate("/user")}
         >

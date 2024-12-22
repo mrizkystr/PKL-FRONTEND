@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Typography, Paper, Grid } from '@mui/material';
+import { Button, Typography, Paper, Grid, Alert } from '@mui/material';
 import { userApi } from '../../api/api';
 import SidebarUser from '../../components/layout/SidebarUser'; // Import Sidebar component
 
-const UserSalesViewDetail = () => {
+const UserSalesCodeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [salesCode, setSalesCode] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -19,47 +21,64 @@ const UserSalesViewDetail = () => {
     try {
       const response = await userApi.salesCodesApi.getDetail(id);
       setSalesCode(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching sales code details:', error);
+      setError('Failed to load sales code details.');
+      setLoading(false);
     }
   };
 
-  if (!salesCode) {
+  if (loading) {
     return <Typography>Loading...</Typography>;
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', backgroundColor: '#001F3D', minHeight: '100vh' }}>
       {/* Sidebar */}
-      <div style={{ width: '250px', backgroundColor: '#f5f5f5', padding: '20px', boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)' }}>
-        <SidebarUser /> {/* Sidebar */}
-      </div>
+      <SidebarUser />
 
       {/* Main Content */}
-      <div style={{ flex: 1, padding: '20px', backgroundColor: '#fff' }}>
-        <Paper style={{ padding: 16 }}>
-          <Typography variant="h4" gutterBottom>
+      <main style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px'}}>
+        <Paper style={{ width: '100%', maxWidth: '800px', padding: '20px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+          <Typography variant="h4" gutterBottom style={{ color: '#0D47A1', fontWeight: 'bold' }}>
             Sales Code Details
           </Typography>
-          <Grid container spacing={2}>
+
+          {error && <Alert severity="error">{error}</Alert>}
+
+          <Grid container spacing={3}>
             {Object.keys(salesCode).map((key) => (
               <Grid item xs={12} sm={6} key={key}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <Typography variant="subtitle2" color="textSecondary" style={{ fontWeight: 'bold' }}>
                   {key.replace('_', ' ')}
                 </Typography>
-                <Typography variant="body1">{salesCode[key] || '-'}</Typography>
+                <Typography variant="body1" style={{ color: '#424242' }}>
+                  {salesCode[key] || '-'}
+                </Typography>
               </Grid>
             ))}
           </Grid>
+
           <div style={{ marginTop: 16 }}>
-            <Button variant="outlined" onClick={() => navigate('/user/sales-codes')}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/user/sales-codes')}
+              style={{
+                borderColor: '#0D47A1',
+                color: '#0D47A1',
+                width: '100%',
+                padding: '12px 0',
+                fontWeight: 'bold',
+              }}
+            >
               Back
             </Button>
           </div>
         </Paper>
-      </div>
+      </main>
     </div>
   );
 };
 
-export default UserSalesViewDetail;
+export default UserSalesCodeDetail;

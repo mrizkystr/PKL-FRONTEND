@@ -69,13 +69,13 @@ const SalesCodeUpdateForm = () => {
   }
 
   return (
-    <div style={{ display: "flex", backgroundColor: "#001f3d", minHeight: "100vh" }}>
+    <div style={{ display: "flex", backgroundColor: "#001F3D", minHeight: "100vh" }}>
       {/* Sidebar */}
       <Sidebar /> 
 
       {/* Main Content */}
-      <main style={{ padding: 16, flex: 1, backgroundColor: "#f0f8ff" }}>
-        <form onSubmit={handleSubmit}>
+      <main style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backgroundColor: '#001F3D' }}>
+        <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '800px', backgroundColor: '#E3F2FD', padding: '20px', borderRadius: '8px' }}>
           {error && <Alert severity="error">{error}</Alert>}
           {success && <Alert severity="success">Sales code updated successfully!</Alert>}
           
@@ -90,7 +90,7 @@ const SalesCodeUpdateForm = () => {
                   value={formData[key]}
                   onChange={handleChange}
                   variant="outlined"
-                  style={{ backgroundColor: "#e0f7fa" }} // Light blue background for inputs
+                  style={{ backgroundColor: "#E0F7FA" }} // Light blue background for inputs
                 />
               </Grid>
             ))}
@@ -101,14 +101,14 @@ const SalesCodeUpdateForm = () => {
             <Button 
               variant="outlined" 
               onClick={() => navigate("/sales-codes")}
-              style={{ borderColor: "#001f3d", color: "#001f3d" }}
+              style={{ borderColor: "#001F3D", color: "#001F3D" }}
             >
               Back
             </Button>
             <Button 
               variant="contained" 
               type="submit" 
-              style={{ backgroundColor: "#001f3d", color: "#fff" }}
+              style={{ backgroundColor: "#001F3D", color: "#fff" }}
             >
               Update
             </Button>

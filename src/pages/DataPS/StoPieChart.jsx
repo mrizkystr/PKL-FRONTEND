@@ -4,7 +4,10 @@ import {
   Box,
   Card,
   CardContent,
-  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Typography,
   Grid,
   Container,
@@ -14,7 +17,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { dataPsApi } from "../../api/api";
 import toast from "react-hot-toast";
 import { getDashboardData } from "../../api/api";
-import Sidebar from "../../components/layout/Sidebar"; // Import Sidebar
+import Sidebar from "../../components/layout/Sidebar";
 
 const COLORS = [
   "#0088FE",
@@ -31,9 +34,38 @@ const COLORS = [
   "#83a6ed",
 ];
 
-const StoPieChartPage = () => {
+const StoPieChart = () => {
   const [bulanPs, setBulanPs] = useState("");
   const [idMitra, setIdMitra] = useState("");
+
+  const months = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  const idMitras = [
+    "AJP",
+    "WO non SA Pribar",
+    "AR",
+    "FAS",
+    "BLM",
+    "KES",
+    "TGC",
+    "BUN",
+    "ENO",
+    "PKS",
+    "MCP",
+  ];
 
   const { data: chartData, isLoading } = useQuery({
     queryKey: ["stoPieChart", bulanPs, idMitra],
@@ -63,36 +95,48 @@ const StoPieChartPage = () => {
   }, [chartData]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      {/* Sidebar */}
+    <Box sx={{ display: "flex", backgroundColor: "#002b5b", minHeight: "100vh" }}>
       <Sidebar />
 
-      {/* Konten Utama */}
-      <Box sx={{ flexGrow: 1, p: 4 }}>
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ flexGrow: 1, p: 4, mr: 6, mt: 8 }}>
+        <Typography variant="h4" gutterBottom sx={{ color: "#ffffff" }}>
           STO Pie Chart Analysis
         </Typography>
 
-        <Card sx={{ mb: 4, p: 3 }}>
+        <Card sx={{ mb: 4, p: 3, backgroundColor: "#2a2d5f", color: "#ffffff" }}>
           <CardContent>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Bulan PS"
-                  value={bulanPs}
-                  onChange={(e) => setBulanPs(e.target.value)}
-                  placeholder="Masukkan bulan (e.g., Januari)"
-                />
+                <FormControl fullWidth>
+                  <InputLabel style={{ color: "white" }}>Bulan PS</InputLabel>
+                  <Select
+                    value={bulanPs}
+                    onChange={(e) => setBulanPs(e.target.value)}
+                    sx={{ color: "white", borderColor: "white" }}
+                  >
+                    {months.map((month) => (
+                      <MenuItem key={month} value={month}>
+                        {month}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="ID Mitra"
-                  value={idMitra}
-                  onChange={(e) => setIdMitra(e.target.value)}
-                  placeholder="Masukkan ID Mitra"
-                />
+                <FormControl fullWidth>
+                  <InputLabel style={{ color: "white" }}>ID Mitra</InputLabel>
+                  <Select
+                    value={idMitra}
+                    onChange={(e) => setIdMitra(e.target.value)}
+                    sx={{ color: "white", borderColor: "white" }}
+                  >
+                    {idMitras.map((mitra) => (
+                      <MenuItem key={mitra} value={mitra}>
+                        {mitra}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
@@ -102,12 +146,13 @@ const StoPieChartPage = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 minHeight: 450,
+                mb: 5, // Added margin bottom to separate chart and value cards
               }}
             >
               {isLoading ? (
-                <Typography>Loading...</Typography>
+                <Typography sx={{ color: "#ffffff" }}>Loading...</Typography>
               ) : (
-                <PieChart width={800} height={400}>
+                <PieChart width={800} height={440}>
                   <Pie
                     data={transformedData}
                     cx={400}
@@ -134,46 +179,30 @@ const StoPieChartPage = () => {
         <Container>
           <Stack spacing={3}>
             <Grid container gap={3} justifyContent={{ xs: "center" }}>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Completed Orders
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.completedOrders}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Total Sales Code
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.totalSalesCodes}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Total Orders User
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.totalOrders}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Total Pending Orders
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.pendingOrders}
-                  </Typography>
-                </CardContent>
-              </Card>
+              {[{
+                label: "Completed Orders", value: data?.completedOrders
+              },
+              { label: "Total Sales Code", value: data?.totalSalesCodes },
+              { label: "Total Orders User", value: data?.totalOrders },
+              { label: "Total Pending Orders", value: data?.pendingOrders },
+              ].map((stat, index) => (
+                <Card
+                  key={index}
+                  sx={{
+                    maxWidth: 345,
+                    backgroundColor: "#2a2d5f",
+                    color: "#ffffff",
+                    boxShadow: 2, // Optional: Add box shadow for extra separation
+                  }}
+                >
+                  <CardContent>
+                    <Typography gutterBottom variant="h5">
+                      {stat.label}
+                    </Typography>
+                    <Typography variant="body2">{stat.value}</Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Grid>
           </Stack>
         </Container>
@@ -182,4 +211,4 @@ const StoPieChartPage = () => {
   );
 };
 
-export default StoPieChartPage;
+export default StoPieChart;

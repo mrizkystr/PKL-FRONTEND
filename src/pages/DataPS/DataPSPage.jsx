@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -94,12 +90,14 @@ const DataPSPage = () => {
   }
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#001F3F" }}>
+    <Box
+      sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#001F3F" }}
+    >
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <Box sx={{ flex: 1, p: 3 }}>
+      <Box sx={{ flex: 1, p: 3, mr: 4 }}>
         {/* Header */}
         <Typography
           variant="h4"
@@ -113,17 +111,39 @@ const DataPSPage = () => {
         <Box sx={{ mb: 3, display: "flex", gap: 2, justifyContent: "center" }}>
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#007BFF", ":hover": { backgroundColor: "#0056b3" } }}
+            sx={{
+              backgroundColor: "#007BFF",
+              ":hover": { backgroundColor: "#0056b3" },
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
             onClick={() => setOpenImportDialog(true)}
           >
             Import Excel
           </Button>
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#28A745", ":hover": { backgroundColor: "#1e7e34" } }}
+            sx={{
+              backgroundColor: "#28A745",
+              ":hover": { backgroundColor: "#1e7e34" },
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
             onClick={() => navigate("/data-ps/create")}
           >
             Add New Data
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#ECE852",
+              ":hover": { backgroundColor: "#FFC145" },
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
+            onClick={() => navigate("/ps-analysis/sto")}
+          >
+            STO Analysis
           </Button>
         </Box>
 
@@ -131,39 +151,93 @@ const DataPSPage = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#B3E5FC" }}>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                ID
-              </TableCell>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                Order ID
-              </TableCell>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                Regional
-              </TableCell>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                Witel
-              </TableCell>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                Datel
-              </TableCell>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                STO
-              </TableCell>
-              <TableCell sx={{ border: "1px solid #B3E5FC", fontWeight: "bold" }}>
-                Actions
-              </TableCell>
-            </TableRow>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  ID
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Order ID
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Regional
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Witel
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Datel
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  STO
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: "1px solid #B3E5FC",
+                    fontWeight: "bold",
+                    padding: "12px",
+                  }}
+                >
+                  Actions
+                </TableCell>
+              </TableRow>
             </TableHead>
             <TableBody>
               {data?.data.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell sx={{ color: "#FFFFFF" }}>{row.id}</TableCell>
-                  <TableCell sx={{ color: "#FFFFFF" }}>{row.ORDER_ID}</TableCell>
-                  <TableCell sx={{ color: "#FFFFFF" }}>{row.REGIONAL}</TableCell>
-                  <TableCell sx={{ color: "#FFFFFF" }}>{row.WITEL}</TableCell>
-                  <TableCell sx={{ color: "#FFFFFF" }}>{row.DATEL}</TableCell>
-                  <TableCell sx={{ color: "#FFFFFF" }}>{row.STO}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.id}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.ORDER_ID}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.REGIONAL}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.WITEL}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.DATEL}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFFFFF", padding: "12px" }}>
+                    {row.STO}
+                  </TableCell>
+                  <TableCell sx={{ padding: "12px" }}>
                     <IconButton
                       onClick={() => navigate(`/data-ps/detail/${row.id}`)}
                     >
@@ -209,7 +283,12 @@ const DataPSPage = () => {
               onChange={(e) => setSelectedFile(e.target.files[0])}
             />
             <Button
-              sx={{ mt: 2, backgroundColor: "#007BFF", ":hover": { backgroundColor: "#0056b3" } }}
+              sx={{
+                mt: 2,
+                backgroundColor: "#007BFF",
+                ":hover": { backgroundColor: "#0056b3" },
+                padding: "10px 20px",
+              }}
               onClick={handleImport}
               disabled={!selectedFile}
             >

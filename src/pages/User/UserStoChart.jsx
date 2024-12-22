@@ -4,7 +4,10 @@ import {
   Box,
   Card,
   CardContent,
-  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Typography,
   Grid,
   Container,
@@ -22,11 +25,40 @@ import {
 import { dataPsApi } from "../../api/api";
 import toast from "react-hot-toast";
 import { getUserDashboardData } from "../../api/api";
-import SidebarUser from "../../components/layout/SidebarUser"; // Import SidebarUser
+import SidebarUser from "../../components/layout/SidebarUser";
 
 const UserStoChart = () => {
   const [bulanPs, setBulanPs] = useState("");
   const [idMitra, setIdMitra] = useState("");
+
+  const months = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  const idMitras = [
+    "AJP",
+    "WO non SA Pribar",
+    "AR",
+    "FAS",
+    "BLM",
+    "KES",
+    "TGC",
+    "BUN",
+    "ENO",
+    "PKS",
+    "MCP",
+  ];
 
   const { data: chartData, isLoading } = useQuery({
     queryKey: ["stoBarChart", bulanPs, idMitra],
@@ -52,37 +84,60 @@ const UserStoChart = () => {
     return chartData.data.labels.map((label, index) => ({
       name: label,
       value: chartData.data.data[index],
+      fill: `hsl(${index * 50}, 70%, 50%)`,
     }));
   }, [chartData]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <SidebarUser /> {/* Gunakan SidebarUser */}
-      <Box sx={{ flex: 1, p: 4 }}>
+    <Box
+      sx={{
+        display: "flex",
+        backgroundColor: "#001f3f",
+        minHeight: "100vh",
+        color: "white",
+      }}
+    >
+      <SidebarUser />
+
+      <Box sx={{ flexGrow: 1, p: 4, mr: 10, mt:8, ml:8 }}>
         <Typography variant="h4" gutterBottom>
-          STO Bar Chart Analysis
+          User STO Bar Chart Analysis
         </Typography>
 
-        <Card sx={{ mb: 4, p: 3 }}>
+        <Card sx={{ mb: 4, p: 3, backgroundColor: "#002b5b", color: "white" }}>
           <CardContent>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Bulan PS"
-                  value={bulanPs}
-                  onChange={(e) => setBulanPs(e.target.value)}
-                  placeholder="Masukkan bulan (e.g., Januari)"
-                />
+                <FormControl fullWidth>
+                  <InputLabel style={{ color: "white" }}>Bulan PS</InputLabel>
+                  <Select
+                    value={bulanPs}
+                    onChange={(e) => setBulanPs(e.target.value)}
+                    sx={{ color: "white", borderColor: "white" }}
+                  >
+                    {months.map((month) => (
+                      <MenuItem key={month} value={month}>
+                        {month}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="ID Mitra"
-                  value={idMitra}
-                  onChange={(e) => setIdMitra(e.target.value)}
-                  placeholder="Masukkan ID Mitra"
-                />
+                <FormControl fullWidth>
+                  <InputLabel style={{ color: "white" }}>ID Mitra</InputLabel>
+                  <Select
+                    value={idMitra}
+                    onChange={(e) => setIdMitra(e.target.value)}
+                    sx={{ color: "white", borderColor: "white" }}
+                  >
+                    {idMitras.map((mitra) => (
+                      <MenuItem key={mitra} value={mitra}>
+                        {mitra}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
 
@@ -104,11 +159,11 @@ const UserStoChart = () => {
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis dataKey="name" stroke="white" />
+                  <YAxis stroke="white" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="value" fill="#8884d8" />
+                  <Bar dataKey="value" fill="#82ca9d" barSize={30} />
                 </BarChart>
               )}
             </Box>
@@ -118,46 +173,24 @@ const UserStoChart = () => {
         <Container>
           <Stack spacing={3}>
             <Grid container gap={3} justifyContent={{ xs: "center" }}>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Completed Orders
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.completedOrders}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Total Sales Code
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.totalSalesCodes}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Total Orders User
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.totalOrders}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5">
-                    Total Pending Orders
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data?.pendingOrders}
-                  </Typography>
-                </CardContent>
-              </Card>
+              {[
+                { label: "Completed Orders", value: data?.completedOrders },
+                { label: "Total Sales Code", value: data?.totalSalesCodes },
+                { label: "Total Orders User", value: data?.totalOrders },
+                { label: "Total Pending Orders", value: data?.pendingOrders },
+              ].map((stat, index) => (
+                <Card
+                  key={index}
+                  sx={{ maxWidth: 345, backgroundColor: "#004080", color: "white" }}
+                >
+                  <CardContent>
+                    <Typography gutterBottom variant="h5">
+                      {stat.label}
+                    </Typography>
+                    <Typography variant="body2">{stat.value}</Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Grid>
           </Stack>
         </Container>

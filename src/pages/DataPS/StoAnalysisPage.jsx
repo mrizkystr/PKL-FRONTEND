@@ -61,17 +61,17 @@ const StoAnalysisPage = () => {
   }
 
   return (
-    <Box display="flex" minHeight="100vh">
+    <Box sx={{ display: "flex", backgroundColor: "#002b5b", minHeight: "100vh" }}>
       <Sidebar /> {/* Sidebar Component */}
-      <Box flex={1} p={3}>
-        <Typography variant="h4" gutterBottom>
+      <Box flex={1} p={3} mr={8} mt={6} ml={4}>
+        <Typography variant="h4" gutterBottom sx={{ fontSize: "2rem" }} color="white">
           PS Analysis by STO
         </Typography>
 
         {/* Filters */}
         <Box display="flex" gap={2} mb={3}>
           <FormControl variant="outlined" size="small">
-            <InputLabel>Select STO</InputLabel>
+            <InputLabel sx={{ color: "white" }}>Select STO</InputLabel>
             <Select
               value={selectedSto}
               onChange={(e) => setSelectedSto(e.target.value)}
@@ -87,7 +87,7 @@ const StoAnalysisPage = () => {
           </FormControl>
 
           <FormControl variant="outlined" size="small">
-            <InputLabel>View Type</InputLabel>
+            <InputLabel sx={{ color: "white" }}>View Type</InputLabel>
             <Select
               value={viewType}
               onChange={(e) => setViewType(e.target.value)}

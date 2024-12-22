@@ -278,7 +278,7 @@ const SidebarUser = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: 0,
           marginLeft: open ? `${drawerWidth}px` : `calc(${theme.spacing(7)} + 1px)`,
           transition: theme.transitions.create("margin", {
             easing: theme.transitions.easing.sharp,
